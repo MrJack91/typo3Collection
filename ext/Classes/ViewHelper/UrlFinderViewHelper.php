@@ -60,15 +60,16 @@ class UrlFinderViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBa
 
 		// remove protectors
 		foreach ($replaced as $link => $protector) {
-			// special: www. without protocol -> guess http://
 			$linkHref = $link;
-			if (strpos($link, 'www.') === 0) {
-				$linkHref = 'http://'.$linkHref;
-			}
 
 			// special case mail
 			if (in_array($link, $mails)) {
 				$linkHref = 'mailto://'.$linkHref;
+			}
+
+			// special: www. without protocol -> guess http://
+			if (strpos($linkHref, 'www.') === 0) {
+				$linkHref = 'http://'.$linkHref;
 			}
 
 			$text = str_replace('href_'.$protector, $linkHref, $text);
