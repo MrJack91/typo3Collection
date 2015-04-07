@@ -54,7 +54,7 @@ class UrlFinderViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBa
 				}
 
 				$replaced[$link] = $matchProtector;
-				$text = str_replace($link, '<a href="href_'.$matchProtector.'">show_'.$matchProtector.'</a>', $text);
+				$text = str_replace($link, '<a href="href_'.$matchProtector.'" target="_blank">show_'.$matchProtector.'</a>', $text);
 			}
 		}
 
