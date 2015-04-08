@@ -37,6 +37,7 @@ class Db {
 	public function connect($host, $db, $username, $password) {
 		try {
 			$host = new PDO('mysql:host='.$host.';dbname='.$db, $username, $password);
+			$host->exec("set names utf8");
 			$this->host = $host;
 		} catch (\PDOException $e) {
 			$error =  'Connection failed: ' . $e->getMessage() . ' (Err: ' . $e->getCode() . ')<br>';
@@ -58,7 +59,7 @@ class Db {
      * execute a prepared statement
      * @param $sql string
      * @param array $params for bindings => array(name, value) (the ":" will be added if missing by name)
-     * @return \PDOStatement e.g. for select add fetchAll()
+     * @return \PDOStatement e.g. for select add fetchAll(\PDO::FETCH_ASSOC)
      */
     public function exec($sql, $params = array()) {
 
