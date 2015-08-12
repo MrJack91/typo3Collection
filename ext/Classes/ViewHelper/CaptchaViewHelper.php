@@ -1,5 +1,6 @@
 <?php
-namespace Lpc\LpcMessageboard\ViewHelpers;
+namespace Lpc\LpcPrayer\ViewHelper;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -21,6 +22,21 @@ namespace Lpc\LpcMessageboard\ViewHelpers;
 *  GNU General Public License for more details.
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
+*
+ *	STEPS
+ * 	=====
+ *		* copy files: ViewHelper, Validator
+ *		* fix namespaces
+ * 		* add flexform option
+ *				<settings.captcha> ...
+ *		* extend model with captcha set/get (as type string)
+ *		* add @validate to controller or model
+ * 				@validate $newMessage \Lpc\LpcPrayer\Validation\Validator\CaptchaValidator
+ * 		* use in fluid
+ *				{namespace lpc = Lpc\LpcPrayer\ViewHelper}
+ *				<lpc:captcha></lpc:captcha>
+ *		* add language texts
+*
 ***************************************************************/
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 

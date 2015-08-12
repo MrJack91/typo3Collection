@@ -6,7 +6,7 @@ namespace LPC\VinbernAktuell\ViewHelpers;
  * @package LPC\VinbernAktuell\ViewHelpers
  * A view helper for showing filetype-image by file extension
  */
-class VisibleFieldViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper {
+class VisibleFieldViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper {
 
 	/**
 	 * categoryRepository

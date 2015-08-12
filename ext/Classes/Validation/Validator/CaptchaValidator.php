@@ -1,5 +1,5 @@
 <?php
-namespace Lpc\LpcMessageboard\Validation\Validator;
+namespace Lpc\LpcPrayer\Validation\Validator;
 /***************************************************************
  *  Copyright notice
  *
@@ -36,7 +36,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
  * @package pt_extbase
  * @subpackage Domain\Validator
  */
-class CaptchaStringValidator extends \TYPO3\CMS\Extbase\Validation\Validator\AbstractValidator {
+class CaptchaValidator extends \TYPO3\CMS\Extbase\Validation\Validator\AbstractValidator {
 
 	const CAPTCHA_SESSION_KEY = 'tx_captcha_string';
 
@@ -54,26 +54,33 @@ class CaptchaStringValidator extends \TYPO3\CMS\Extbase\Validation\Validator\Abs
 	protected $configurationManager = null;
 
 	/**
-	 * @param string $captchaString The value that should be validated
-	 * @return boolean TRUE if the value is valid, FALSE if an error occurred
+	 * Object Manager
+	 *
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+	 * @inject
 	 */
-	public function isValid($captchaString) {
+	protected $objectManager;
+
+
+	/**
+	 * @param mixed $object
+	 * @return bool TRUE if the value is valid, FALSE if an error occurred
+	 */
+	protected function isValid($object) {
 
 		$captchaCheck = true;
 
 		// load flex settings
-		/*
-		$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-		$this->configurationManager = $objectManager->get('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface');
-		*/
 		$settings = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS);
+		$captchaString = $object->getCaptcha();
 
 		// check captcha
 		if (ExtensionManagementUtility::isLoaded('captcha') && $settings['captcha']) {
 			session_start();
-
 			if ($captchaString != $_SESSION[self::CAPTCHA_SESSION_KEY]) {
-				$this->addError('LpcMessageboard.CaptchaStringValidator.InputStringWrong', 1340029430);
+				$error = $this->objectManager->get('TYPO3\CMS\Extbase\Validation\Error', '', 1389545453);
+				$this->result->forProperty('captcha')->addError($error);
+				$this->addError('LpcPrayer.CaptchaStringValidator.InputStringWrong', 1340029430);
 				$captchaCheck = false;
 			}
 		}
