@@ -22,19 +22,25 @@ class SizeOverwriterViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\Abstract
 		$content = $this->renderChildren();
 
 		// read the height and width from tag
-		preg_match_all('/(width|height)="([^"]*)"/', $content, $matches);
+		$result = preg_match_all('/(width|height)="([^"]*)"/', $content, $matches);
+
+		if ($result === 0) {
+			return $content;
+		}
 
 		$oldWidth = intval($matches[2][0]);
 		$oldHeight = intval($matches[2][1]);
-		$ratio = $oldWidth / $oldHeight;
 
-		if ($oldWidth > 0 && $oldHeight > 0 && $ratio > 0) {
-			if ($newHeight > 0 && $newWidth == 0) {
-				// only height was set
-				$newWidth = round($newHeight * $ratio);
-			} elseif ($newWidth > 0 && $newHeight == 0) {
-				// only width was set
-				$newHeight = round($newWidth / $ratio);
+		if ($oldWidth > 0 && $oldHeight > 0) {
+			$ratio = $oldWidth / $oldHeight;
+			if ($ratio > 0) {
+				if ($newHeight > 0 && $newWidth == 0) {
+					// only height was set
+					$newWidth = round($newHeight * $ratio);
+				} elseif ($newWidth > 0 && $newHeight == 0) {
+					// only width was set
+					$newHeight = round($newWidth / $ratio);
+				}
 			}
 		}
 
