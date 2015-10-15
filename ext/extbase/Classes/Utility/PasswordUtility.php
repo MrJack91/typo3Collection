@@ -1,6 +1,9 @@
 <?php
 
 namespace Lpc\LpcPrayer\Utility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Saltedpasswords\Salt\SaltFactory;
+use TYPO3\CMS\Saltedpasswords\Utility\SaltedPasswordsUtility;
 
 /**
  * Class PasswordUtility
@@ -37,6 +40,24 @@ class PasswordUtility {
 
 		return $password;
 
+	}
+
+	/**
+	 * Calcs the hash for typo3 (needs SaltedPasswords Extension)
+	 * @param $password
+	 * @return string
+	 */
+	public static function calcHash($password) {
+		$saltedPassword = '';
+		if (ExtensionManagementUtility::isLoaded('saltedpasswords')) {
+			if (SaltedPasswordsUtility::isUsageEnabled('FE')) {
+				$objSalt = SaltFactory::getSaltingInstance(NULL);
+				if (is_object($objSalt)) {
+					$saltedPassword = $objSalt->getHashedPassword($password);
+				}
+			}
+		}
+		return $saltedPassword;
 	}
 
 }

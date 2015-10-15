@@ -18,7 +18,12 @@ class NativeSqlService implements \TYPO3\CMS\Core\SingletonInterface
 	 * NativeSqlService constructor.
 	 */
 	public function __construct() {
-		//todo: check if local -> set debug to true
+		// enable debug automatic if local developement detected
+		$baseUrl = GeneralUtility::getIndpEnv('TYPO3_SITE_URL');
+		$baseUrl = trim($baseUrl, '/');
+		if (substr($baseUrl, -6) == '.local') {
+			$this->setDebug(true);
+		}
 	}
 
 	/**
@@ -79,6 +84,52 @@ class NativeSqlService implements \TYPO3\CMS\Core\SingletonInterface
 		return $return;
 	}
 
+	// ****** FUNCTIONS: creates Qeries ********************************************************************************
+
+	/**
+	 * Builds a select statement and returns it
+	 * @param $select
+	 * @param $from
+	 * @param string $where
+	 * @param string $groupBy
+	 * @param string $orderBy
+	 * @param string $limit
+	 * @return mixed
+	 */
+	public static function selectStatement($select, $from, $where = '', $groupBy = '', $orderBy = '', $limit = '') {
+		return $GLOBALS['TYPO3_DB']->SELECTquery($select, $from, $where, $groupBy, $orderBy, $limit);
+	}
+
+	/**
+	 * Builds an insert statement and returns it
+	 * @param $table
+	 * @param $fieldValues
+	 * @return mixed
+	 */
+	public static function insertStatement($table, $fieldValues) {
+		return $GLOBALS['TYPO3_DB']->INSERTquery($table, $fieldValues);
+	}
+
+	/**
+	 * Builds an update statement and returns it
+	 * @param $table
+	 * @param $where
+	 * @param $fieldValues
+	 * @return mixed
+	 */
+	public static function updateStatement($table, $where, $fieldValues) {
+		return $GLOBALS['TYPO3_DB']->UPDATEquery($table, $where, $fieldValues);
+	}
+
+	/**
+	 * Builds an delete statement and returns it
+	 * @param $table
+	 * @param $where
+	 * @return mixed
+	 */
+	public static function deleteStatement($table, $where) {
+		return $GLOBALS['TYPO3_DB']->DELETEquery($table, $where);
+	}
 
 
 	// ****** PROTECTED FUNCTIONS **************************************************************************************
