@@ -44,6 +44,7 @@ class RealUrlAutoConfiguration {
 		// Check for proper unique key
 		$postVar = (ExtensionManagementUtility::isLoaded('tt_news') ? 'tx_news' : 'news');
 
+		// see realurl doc: https://wiki.typo3.org/Realurl/manual
 		return array_merge_recursive($params['config'], array(
 				'postVarSets' => array(
 					'_DEFAULT' => array(
