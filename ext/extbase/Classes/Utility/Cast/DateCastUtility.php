@@ -134,4 +134,24 @@ class DateCastUtility {
 		return $timeRange;
 	}
 
+	/**
+	 * Search the last weekday before date
+	 	!! needs fitting -> imported from gon
+	 * @param $date timestamp of the date
+	 * @param $day	the english 3-letter abbreviation (mon, tue, wed, thu, fri, sat, sun) - default: calendarStartDay from ts
+	 * @return string with date
+	 */
+ 	/*
+	function findLastWeekday($date, $day = null) {
+		if (is_null($day)) {
+			$day = $this->calendarStartDay;
+		}
+		if (strtolower(date('D', $date)) !== strtolower($day)) {
+			$date = strtotime('last ' . $day . ' ' . date('Y-m-d', $date));
+		}
+		$date = date('Y-m-d', $date);
+		return $date;
+	}
+	*/
+
 }
