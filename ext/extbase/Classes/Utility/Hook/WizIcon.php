@@ -1,5 +1,5 @@
 <?php
-namespace Lpc\LpcDonation\Utility\Hook;
+namespace Lpc\LpcKoolEvents\Utility\Hook;
 
 use \TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -10,8 +10,10 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * @package TYPO3
  * @subpackage
  * @package Lpc\LpcDonation\Utility\Hook
- * Exmpale: (IF BE ist nicht nötig)
+ * Example ext_tables.php: (IF BE ist nicht nötig)
  *      $TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']['Lpc\LpcDonation\Utility\Hook\WizIcon'] = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'Classes/Utility/Hook/WizIcon.php';
+ * 		add ressources to locallang
+ * 		add wiz icon (24x24px)
  */
 class WizIcon {
 
@@ -22,12 +24,14 @@ class WizIcon {
 	 * @return array
 	 */
 	public function proc($wizardItems = array()) {
+	    $translateBase = 'LLL:EXT:lpc_kool_events/Resources/Private/Language/locallang_be.xlf:wizIcon';
+
 	    // hier den Extension-Name einfügen (ohne _) - obwohl extbase muss hier das pi1 angegeben werden
-		$wizardItems['plugins_tx_lpcDonation_pi1'] = array(
-			'icon' => ExtensionManagementUtility::extRelPath('lpc_donation') . 'Resources/Public/Icons/ce_wiz.png', // Extension Key angeben (mit _)
-			'title' => LocalizationUtility::translate('tx_lpcdonation.wizicon.title', 'lpcDonation'),               // Ressoursce erstellen (wird via Extension Key ohne _ eingebunden)
-			'description' => LocalizationUtility::translate('tx_lpcdonation.wizicon.description', 'lpcDonation'),   // "
-			'params' => '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=lpcdonation_pi1',          // Genauer Plugin Key angeben (kommt von registerPlugin(): Extension und Plugin Key mit _) -> kann in der Plugin Select List im Backend überprüft werden
+		$wizardItems['plugins_tx_lpcKoolEvents_pi1'] = array(
+			'icon' => ExtensionManagementUtility::extRelPath('lpc_kool_events') . 'Resources/Public/Icons/ce_wiz.png', // Extension Key angeben (mit _)
+			'title' => LocalizationUtility::translate($translateBase.'.title', 'lpcKoolEvents'),               // Ressoursce erstellen (wird via Extension Key ohne _ eingebunden)
+			'description' => LocalizationUtility::translate($translateBase.'.description', 'lpcKoolEvents'),   // "
+			'params' => '&defVals[tt_content][CType]=list&defVals[tt_content][list_type]=lpckoolevents_event',          // Genauer Plugin Key angeben (kommt von registerPlugin(): Extension und Plugin Key mit _) -> kann in der Plugin Select List im Backend überprüft werden
 			'tt_content_defValues' => array(
 				'CType' => 'list',
 			),
