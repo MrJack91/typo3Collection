@@ -1,15 +1,20 @@
 <?php
 
 namespace Lpc\LpcKoolEvents\Utility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * TypoScript Service class
  * Merges flexform values with typoScript values.
  *
  * Use as:
- * 		// merge typoscript with flexforms values
+ *
+		ts: overrideFlexformSettingsIfEmpty = settings.frontend.fileicon.path,settings.frontend.fileicon.extension
+
+		// merge typoscript with flexforms values -> initialAction
 		$this->typoscriptUtility->merge($this->request->getControllerExtensionKey());
 
+ 		// set default pid, if no pid is defined
 		$configuration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 		if (empty($configuration['persistence']['storagePid'])) {
 			// will only work with this instance of configurationmanager
@@ -58,19 +63,20 @@ class FlexformTyposcriptMergeUtility implements \TYPO3\CMS\Core\SingletonInterfa
 	 * Injects the Configuration Manager and is initializing the framework settings
 	 *  ->    https://git.typo3.org/TYPO3CMS/Extensions/news.git/blob_plain/HEAD:/Classes/Controller/NewsController.php
 	 *        https://forge.typo3.org/issues/51935
-	 * @param string $extName the extension name (e.x.: in controller: $this->request->getControllerExtensionKey())
+	 * @param string $extName the extension with plugin (e.g. tx_lpckoolevents_event)
+	 * 							Best show in here in $tsSettings['plugin.']
 	 */
 	public function merge($extName)
 	{
 		// load both configurations
-		$tsSettings = $this->configurationManager->getConfiguration(
-			\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
-		);
 		$flexSettings = $this->configurationManager->getConfiguration(
 			\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
 		);
-
+		$tsSettings = $this->configurationManager->getConfiguration(
+			\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
+		);
 		$tsPluginSettings = $tsSettings['plugin.'][$extName.'.'];
+
 		// start override
 		if (isset($tsPluginSettings['settings.']['overrideFlexformSettingsIfEmpty'])) {
 			$flexSettings = $this->override($flexSettings, $tsPluginSettings);
@@ -80,32 +86,37 @@ class FlexformTyposcriptMergeUtility implements \TYPO3\CMS\Core\SingletonInterfa
 	}
 
 	/**
-	 * @param array $base
-	 * @param array $overload
+	 * @param array $flex flexform
+	 * @param array $ts typoscript as fallback if flex is empty
 	 * @return array
 	 */
-	protected function override(array $base, array $overload)
+	protected function override(array $flex, array $ts)
 	{
-		$validFields = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $overload['settings.']['overrideFlexformSettingsIfEmpty'], TRUE);
+		$overrideFields = $ts['settings.']['overrideFlexformSettingsIfEmpty'];
+		$validFields = GeneralUtility::trimExplode(',', $overrideFields, TRUE);
+
 		foreach ($validFields as $fieldName) {
-			// Multilevel field
 			if (strpos($fieldName, '.') !== FALSE) {
+				// Multilevel field
 				$keyAsArray = explode('.', $fieldName);
-				$foundInCurrentTs = $this->getValue($base, $keyAsArray);
+				$foundInCurrentTs = $this->getValue($flex, $keyAsArray);
+
 				if (is_string($foundInCurrentTs) && strlen($foundInCurrentTs) === 0) {
-					$foundInOriginal = $this->getValue($overload, $keyAsArray);
+					// if only empty string is found, use typoscript value
+					$foundInOriginal = $this->getValue($ts, $keyAsArray);
 					if ($foundInOriginal) {
-						$base = $this->setValue($base, $keyAsArray, $foundInOriginal);
+						// override flex value
+						$flex = $this->setValue($flex, $keyAsArray, $foundInOriginal);
 					}
 				}
 			} else {
 				// if flexform setting is empty and value is available in TS
-				if ((!isset($base[$fieldName]) || strlen($base[$fieldName]) === 0) && isset($overload[$fieldName])) {
-					$base[$fieldName] = $overload[$fieldName];
+				if ((!isset($flex[$fieldName]) || strlen($flex[$fieldName]) === 0) && isset($ts[$fieldName])) {
+					$flex[$fieldName] = $ts[$fieldName];
 				}
 			}
 		}
-		return $base;
+		return $flex;
 	}
 
 	/**
