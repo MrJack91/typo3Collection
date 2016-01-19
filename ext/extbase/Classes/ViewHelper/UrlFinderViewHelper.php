@@ -54,7 +54,13 @@ class UrlFinderViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBa
 				}
 
 				$replaced[$link] = $matchProtector;
-				$text = str_replace($link, '<a href="href_'.$matchProtector.'" target="_blank">show_'.$matchProtector.'</a>', $text);
+
+				$target = '_blank';
+				if (in_array($link, $mails)) {
+					$target = '_self';
+				}
+
+				$text = str_replace($link, '<a href="href_'.$matchProtector.'" target="'.$target.'">show_'.$matchProtector.'</a>', $text);
 			}
 		}
 
@@ -64,7 +70,7 @@ class UrlFinderViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBa
 
 			// special case mail
 			if (in_array($link, $mails)) {
-				$linkHref = 'mailto://'.$linkHref;
+				$linkHref = 'mailto:'.$linkHref;
 			}
 
 			// special: www. without protocol -> guess http://
